@@ -1,0 +1,8 @@
+SetUserName{jbertau} //comment
+SetExecName{/home/jbertau/Data/Repositories/exe}
+SetOutputDir{/scratch/halstead/j/jbertau/sandbox/dir1}
+SetMaxJobs{5}
+SetSubTimer{10}
+AddShellCommandArg{source;/cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.06/x86_64-centos7-gcc48-opt/bin/thisroot.sh}
+AddCommandLineArg{f; /home/jbertau/Data/Repositories/TFileParser/some_file_list.txt; 1}
+AddCommandLineArg{i; 5; 16; 5}
