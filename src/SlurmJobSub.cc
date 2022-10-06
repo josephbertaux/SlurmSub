@@ -519,12 +519,25 @@ int SlurmJobSub::WriteJobs()
 	std::string s = "";
 	std::time_t t;
 
+	if(user_name == "")
+	{
+		output_str << "\tMember 'user_name' unspecified" << std::endl;
+		return_val = 1;
+	}
+
+	if(exec_name == "")
+	{
+		output_str << "\tMember 'exec_name' unspecified" << std::endl;
+		return_val = 1;
+	}
+
 	if(max_jobs < 1)
 	{
 		output_str << "\tMember 'max_jobs' is less than 1" << std::endl;
 		return_val = 1;
-		goto label;
 	}
+
+	if(return_val)goto label;
 
 	jobs = 0;
 	while(true)
