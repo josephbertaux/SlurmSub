@@ -47,5 +47,5 @@ std::string ShellCommandArg::Write()
 
 std::string ShellCommandArg::Name()
 {
-	return cmd + "...";
+	return cmd;
 }
