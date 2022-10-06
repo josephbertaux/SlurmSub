@@ -5,7 +5,7 @@
 void SlurmJobSub::MakeSJSMap()
 {
 	sjs_map.clear();
-	std::string s = "";
+	std::string s = "\n";
 
 	sjs_map["-h"] = 		SJS_TPL
 					{
@@ -13,21 +13,25 @@ void SlurmJobSub::MakeSJSMap()
 						"./slurm_sub ...\n" +
 						"\tCreates SLURM jobs to parse data stored in source TFiles into target TFiles\n" + 
 						"\tThis executable takes a single argument which is the name of a config file\n" +
+						"\n" +
 						"\tThe lines of the config file have the following format:\n" +
-						"\t\tfunc(args, ...);\n" +
+						"\t\tfunc" + opening_sym + "args" + delim + "..." + closing_sym + "\n" +
 						"\tWhere 'func' can take the following values:\n" +
 
-						"\t\t'SetUserName'\n" +
-						"\t\t'SetExecName'\n" +
-						"\t\t'SetOutputDir'\n" +
-						"\t\t'SetMaxJobs'*\n" +
-						"\t\t'SetSubTimer'*\n" +
+						"\n" + 
+						"\t\tSetUserName\n" +
+						"\t\tSetExecName\n" +
+						"\t\tSetOutputDir\n" +
+						"\t\t*SetMaxJobs\n" +
+						"\t\t*SetSubTimer\n" +
+						"\t\t*AddShellCommandArg\n" +
+						"\t\t*AddCommandLineArg\n" +
+						"\n" +
 
 						"\tFuncs marked with * are optional to include in the config file\n" +
-						"\tHowever, at least one of 'SetSourceName' or 'SetSourceList' must be specified\n" +
 						"\tFor more information about any 'func', do:\n" +
-						"\t\t./parse func\n" +
-						"\t(The config file name cannot conflict with one of these options)\n",
+						"\t\t./slurm_sub -h func\n" +
+						s,
 						this,
 						&SlurmJobSub::ShowHelp
 					};
@@ -35,8 +39,10 @@ void SlurmJobSub::MakeSJSMap()
 	sjs_map["SetUserName"] =	SJS_TPL
 					{
 						s +
-						"SetUserName(std::string)\n" +
-		   		    		"\tSet the username that will be used with SLURM for file submission\n",
+						"Implements\n" +
+						"\tSetUserName(std::string)\n" +
+		   		    		"\tSet the username that will be used with SLURM for file submission\n" +
+						s,
 						this,
 						&SlurmJobSub::SetUserName
 					};
@@ -44,8 +50,10 @@ void SlurmJobSub::MakeSJSMap()
 	sjs_map["SetExecName"] =	SJS_TPL
 					{
 						s +
-						"SetExecName(std::string)\n" +
-		   		    		"\tSet the fullpath name of the executable that will be used with SLURM for file submission\n",
+						"Implements\n" +
+						"\tSetExecName(std::string)\n" +
+		   		    		"\tSet the fullpath name of the executable that will be used with SLURM for file submission\n" +
+						s,
 						this,
 						&SlurmJobSub::SetExecName
 					};
@@ -53,11 +61,18 @@ void SlurmJobSub::MakeSJSMap()
 	sjs_map["SetOutputDir"] =	SJS_TPL
 					{
 						s +
-						"SetOutputDir(std::string)\n" +
+						"Implements\n" +
+						"\tSetOutputDir(std::string)\n" +
 		       				"\tSet the full path name for the output directory\n" +
 		       				"\tThe following will be recreated in that directory:\n" +
-		       				"\t\tA subdir '_sub' containing the SLURM submission files\n" +
-		       				"\t\tA subdir '_out' containing the outputs of the SLURM job(s)\n",
+		       				"\t\tA subdir 'sub' containing the SLURM submission files\n" +
+		       				"\t\tA subdir 'out' containing the outputs of the SLURM job(s)\n" +
+						"\tAdditional subdirs can be created by adding lines such as\n" +
+						"\t\tAddCommandLineArg" + opening_sym + "d" + delim + "..." + closing_sym + "\n" +
+						"\twhere '...' is the local name of the subdir to be added\n" +
+						"\tThe fullpath name will also be passed to the executable as command line argument\n" +
+						"\tWARNING: All subdirs are recreated before jobs are submitted\n" +
+						s,
 						this,
 						&SlurmJobSub::SetOutputDir
 					};
@@ -65,11 +80,13 @@ void SlurmJobSub::MakeSJSMap()
 	sjs_map["SetMaxJobs"] =		SJS_TPL
 					{
 						s +
-						"SetMaxJobs(int)\n" +
+						"Implements\n" +
+						"\tSetMaxJobs(int)\n" +
 				       		"\tSets the maximum number of SLURM jobs that can be running concurrently in SLURM\n" +
 				       		"\tThe program checks the number of jobs submitted by (SetUserName)\n" +
 				       		"\t\tIf this is less than (SetMaxJobs), the program will submit jobs up to the difference\n" +
-				       		"\t\tOtherwise, it waits an amount of time (SetSubTimer) before checking again\n",
+				       		"\t\tOtherwise, it waits an amount of time (SetSubTimer) before checking again\n" +
+						s,
 						this,
 						&SlurmJobSub::SetMaxJobs
 					};
@@ -78,9 +95,11 @@ void SlurmJobSub::MakeSJSMap()
 	sjs_map["SetSubTimer"] =	SlurmJobSub::SJS_TPL
 					{
 						s +
-						"SetSubTimer(int)\n" +
+						"Implements\n" +
+						"\tSetSubTimer(int)\n" +
 						"\tSets the wait time (in seconds) between checks of the number of SLURM jobs\n" +
-						"\tHas a default value of '60'\n",
+						"\tHas a default value of '" + std::to_string(sub_timer) + "'\n" +
+						s,
 						this,
 						&SlurmJobSub::SetSubTimer
 					};
@@ -88,11 +107,13 @@ void SlurmJobSub::MakeSJSMap()
 	sjs_map["AddShellCommandArg"] =	SlurmJobSub::SJS_TPL
 					{
 						s +
-						"AddShellCommandLineArg(int)\n" +
+						"Implements\n" +
+						"\tAddShellCommandLineArg(int)\n" +
 						"\tAdds a shell command line to be called in the SLURM sub file before the main program is ran\n" +
 						"\tSince the Config(std::string) method removes whitespace characters,\n" + 
 						"\tthe command and arguments must be separated with the delim character '" + delim + "' instead of spaces\n" +
-						"\tOtherwise, the command is verbatim as it would be called in a shell session\n",
+						"\tOtherwise, the command is verbatim as it would be called in a shell session\n" +
+						s,
 						this,
 						&SlurmJobSub::AddShellCommandArg
 					};
@@ -100,13 +121,17 @@ void SlurmJobSub::MakeSJSMap()
 	sjs_map["AddCommandLineArg"] =	SlurmJobSub::SJS_TPL
 					{
 						s +
-						"AddCommandLineArg(int)\n" +
+						"Implements\n" +
+						"\tAddCommandLineArg(int)\n" +
 						"\tAdds a command line arg to be passed to the executable being submitted to SLURM\n" +
 						"\tThe first argument is the type of commandline arg\n" +
-						"\t\t'i' is for CommandLineArg, the base class that corresponds to an integer value over a range\n" +
-						"\t\t'v' is for CommandLineArgV, a child class that corresponds to a constant verbatim string\n" +
-						"\t\t'f' is for CommandLineArgF, a child class that corresponds to a file that has its contents parsed in chunks of a given size\n" +
-						"\tArguments are written after the executable in the order they are added\n",
+						"\t\t'v' is for CommandLineArgV, corresponding to a constant verbatim string\n" +
+						"\t\t'i' is for CommandLineArgI, corresponding to an integer value over a range\n" +
+						"\t\t'f' is for CommandLineArgF, corresponding to a file that has its contents parsed in chunks of a given size\n" +
+						"\t\t'd' is for a CommandLineArgV that corresponds to a subdirectory of the output directory\n" +
+						"\t\t\tthis subdirectory is recreated when the program begins to submit jobs\n" +
+						"\tArguments are written after the executable in the order they are added\n" +
+						s,
 						this,
 						&SlurmJobSub::AddCommandLineArg
 					};
@@ -121,7 +146,12 @@ SlurmJobSub::SlurmJobSub()
 
 SlurmJobSub::~SlurmJobSub()
 {
-	for(uint u = 0; u < cmd_line_args.size(); u++)
+	uint u;
+	for(u = 0; u < shell_cmd_args.size(); u++)
+	{
+		if(shell_cmd_args[u])delete shell_cmd_args[u];
+	}
+	for(u = 0; u < cmd_line_args.size(); u++)
 	{
 		if(cmd_line_args[u])delete cmd_line_args[u];
 	}
@@ -290,7 +320,7 @@ int SlurmJobSub::Config(std::string config_file_name, bool v)
 	}
 
 	label:
-	config_file.close();
+	if(config_file.is_open())config_file.close();
 	output_str << std::ends;
 	if(return_val)std::cout << output_str.str();
 	return return_val;
@@ -302,15 +332,14 @@ int SlurmJobSub::RecreateDirs()
 	std::stringstream output_str;
 	output_str << "RecreateDirs():" << std::endl;
 
-	if(std::filesystem::exists(output_dir.c_str()))
+	uint u;
+	std::string dir;
+
+	if(output_dir == "")
 	{
-		if(!std::filesystem::remove_all(output_dir.c_str()))
-		{
-			output_str << "\tFailed to remove dir:" << std::endl;
-			output_str << "\t" << output_dir << std::endl;
+			output_str << "\tMember 'output_dir' not set" << std::endl;
 			return_val = 1;
 			goto label;
-		}
 	}
 
 	if(!std::filesystem::exists(output_dir.c_str()))
@@ -324,25 +353,20 @@ int SlurmJobSub::RecreateDirs()
 		}
 	}
 
-	if(!std::filesystem::exists((output_dir + "/_out").c_str()))
-	{
-		if(!std::filesystem::create_directories((output_dir + "/_out").c_str()))
-		{
-			output_str << "\tFailed to create subdir '_out' of dir:" << std::endl;
-			output_str << "\t" << output_dir << std::endl;
-			return_val = 1;
-			goto label;
-		}
-	}
+	output_str << "\tIn dir:" << std::endl;
+	output_str << "\t" << output_dir << std::endl;
 
-	if(!std::filesystem::exists((output_dir + "/_sub").c_str()))
+	for(u = 0; u < output_subdirs.size(); u++)
 	{
-		if(!std::filesystem::create_directories((output_dir + "/_sub").c_str()))
+		dir = output_dir + "/" + output_subdirs[u];
+
+		if(std::filesystem::exists(dir.c_str()))if(!std::filesystem::remove_all(dir.c_str()))return_val = 1;
+		if(!std::filesystem::exists(dir.c_str()))if(!std::filesystem::create_directories(dir.c_str()))return_val = 1;
+
+		if(return_val)
 		{
-			output_str << "\tFailed to create subdir '_sub' of dir:" << std::endl;
-			output_str << "\t" << output_dir << std::endl;
-			return_val = 1;
-			goto label;
+			output_str << "\t\tFailed to recreate subdir:" << std::endl;
+			output_str << "\t\t" <<  output_subdirs[u] << std::endl;
 		}
 	}
 
@@ -437,8 +461,8 @@ int SlurmJobSub::WriteJob(std::string& sub_file_name)
 		temp += cmd_line_args[u]->Name();
 	}
 
-	sub_file_name = output_dir + "/_sub/" + temp + ".sub";
-	out_file_name = output_dir + "/_out/" + temp + ".out";
+	sub_file_name = output_dir + "/" + output_subdirs[0] + "/" + temp + ".sub";
+	out_file_name = output_dir + "/" + output_subdirs[1] + "/" + temp + ".out";
 
 	sub_file.open(sub_file_name.c_str(), std::ofstream::out | std::ofstream::trunc);
 	if(!sub_file.is_open())
@@ -549,9 +573,39 @@ int SlurmJobSub::WriteJobs()
 }
 
 //member access functions
-int SlurmJobSub::ShowHelp(std::vector<std::string>)
+int SlurmJobSub::ShowHelp(std::vector<std::string> args)
 {
-	return 0;
+	int return_val = 0;
+	std::stringstream output_str;
+	output_str << "ShowHelp(std::vector<std::string> args):" << std::endl;
+
+	bool flag = false;
+	SJS_MAP::const_iterator itr;
+
+	if(args.size() >= 1)if(args[0] != "-h")goto label;
+
+	return_val = 1;
+	itr = sjs_map.find("-h");
+	if(args.size() >= 2)itr = sjs_map.find(args[1]);
+	if(itr == sjs_map.end())
+	{
+		if(args.size() >= 2)
+		{
+			output_str << "\tCould not find requested help option:" << std::endl;
+			output_str << "\t'" << args[1] << "'" << std::endl;
+			output_str << "\tTry" << std::endl;
+			output_str << "\t\t ./slurm_sub -h" << std::endl;
+			output_str << "\tfor a full list of options" << std::endl;
+			flag = true;
+		}
+		goto label;
+	}
+	std::cout << std::get<0>(itr->second);
+
+	label:
+	output_str << std::ends;
+	if(flag)std::cout << output_str.str();
+	return return_val;
 }
 
 int SlurmJobSub::SetUserName(std::vector<std::string> args)
@@ -726,10 +780,12 @@ int SlurmJobSub::AddShellCommandArg(std::vector<std::string> args)
 		goto label;
 	}
 
-	shell_cmd_args.push_back(arg);
-
 	label:
-	if(return_val and arg)delete arg;
+	if(arg)
+	{
+		if(return_val)delete arg;
+		else shell_cmd_args.push_back(arg);
+	}
 	output_str << std::ends;
 	if(return_val)std::cout << output_str.str();
 	return return_val;
@@ -754,8 +810,31 @@ int SlurmJobSub::AddCommandLineArg(std::vector<std::string> args)
 	type = args[0];
 	args.erase(args.begin());
 
-	if(type == "i")arg = new CommandLineArg();
-	if(type == "f")arg = new CommandLineArgF();
+	if(args.size() == 0)
+	{
+		output_str << "\tPassed argument 'args' only contained type specifier '" << type << "'" << std::endl;
+		return_val = 1;
+		goto label;
+	}
+
+	if(type == "i")
+	{
+		arg = new CommandLineArgI();
+	}
+	if(type == "f")
+	{
+		arg = new CommandLineArgF();
+	}
+	if(type == "v")
+	{
+		arg = new CommandLineArgV();
+	}
+	if(type == "d")
+	{
+		output_subdirs.push_back(args[0]);
+		args[0] = output_dir + "/" + args[0];
+		arg = new CommandLineArgV();
+	}
 	//...
 
 	if(!arg)
@@ -771,10 +850,12 @@ int SlurmJobSub::AddCommandLineArg(std::vector<std::string> args)
 		goto label;
 	}
 
-	cmd_line_args.push_back(arg);
-
 	label:
-	if(return_val and arg)delete arg;
+	if(arg)
+	{
+		if(return_val) delete arg;
+		else cmd_line_args.push_back(arg);
+	}
 	output_str << std::ends;
 	if(return_val)std::cout << output_str.str();
 	return return_val;

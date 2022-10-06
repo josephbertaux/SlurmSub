@@ -4,5 +4,7 @@ SetOutputDir{/scratch/halstead/j/jbertau/sandbox/dir1}
 SetMaxJobs{5}
 SetSubTimer{10}
 AddShellCommandArg{source;/cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.24.06/x86_64-centos7-gcc48-opt/bin/thisroot.sh}
+AddCommandLineArg{v; /home/jbertau/Data/some_config_file}
+AddCommandLineArg{d; target}
+AddCommandLineArg{i; 0; 10; 2}
 AddCommandLineArg{f; /home/jbertau/Data/Repositories/TFileParser/some_file_list.txt; 1}
-AddCommandLineArg{i; 5; 16; 5}

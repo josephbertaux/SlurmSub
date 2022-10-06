@@ -7,7 +7,8 @@ OBJ_DIR = ./bld
 
 CC = g++
 
-OBJS = $(OBJ_DIR)/SlurmSub.o $(OBJ_DIR)/SlurmJobSub.o $(OBJ_DIR)/ShellCommandArg.o $(OBJ_DIR)/CommandLineArg.o $(OBJ_DIR)/CommandLineArgF.o
+OBJS = $(OBJ_DIR)/SlurmSub.o $(OBJ_DIR)/SlurmJobSub.o $(OBJ_DIR)/ShellCommandArg.o $(OBJ_DIR)/CommandLineArg.o \
+	$(OBJ_DIR)/CommandLineArgV.o $(OBJ_DIR)/CommandLineArgI.o $(OBJ_DIR)/CommandLineArgF.o
 
 FLAGS = `root-config --cflags`
 #INCS = -I`root-config --incdir` #already included with root-config --cflags
@@ -31,6 +32,14 @@ $(OBJ_DIR)/ShellCommandArg.o :
 $(OBJ_DIR)/CommandLineArg.o :
 	$(CC) $(FLAGS) $(INCS) -c $(SRC_DIR)/CommandLineArg.cc $(LIBS)
 	mv CommandLineArg.o $(OBJ_DIR)/CommandLineArg.o
+
+$(OBJ_DIR)/CommandLineArgV.o :
+	$(CC) $(FLAGS) $(INCS) -c $(SRC_DIR)/CommandLineArgV.cc $(LIBS)
+	mv CommandLineArgV.o $(OBJ_DIR)/CommandLineArgV.o
+
+$(OBJ_DIR)/CommandLineArgI.o :
+	$(CC) $(FLAGS) $(INCS) -c $(SRC_DIR)/CommandLineArgI.cc $(LIBS)
+	mv CommandLineArgI.o $(OBJ_DIR)/CommandLineArgI.o
 
 $(OBJ_DIR)/CommandLineArgF.o :
 	$(CC) $(FLAGS) $(INCS) -c $(SRC_DIR)/CommandLineArgF.cc $(LIBS)

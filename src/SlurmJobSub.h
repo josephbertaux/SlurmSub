@@ -24,6 +24,8 @@
 #include "ShellCommandArg.h"
 
 #include "CommandLineArg.h"
+#include "CommandLineArgV.h"
+#include "CommandLineArgI.h"
 #include "CommandLineArgF.h"
 
 class SlurmJobSub
@@ -50,6 +52,9 @@ protected:
 	std::string user_name = "";
 	std::string exec_name = "";
 	std::string output_dir = "";
+
+	std::vector<std::string> output_subdirs = {"sub", "out"};
+
 	int max_jobs = 1;
 	int sub_timer = 0;
 public:
@@ -71,6 +76,7 @@ public:
 	int SetOutputDir(std::vector<std::string>);
 	int SetMaxJobs(std::vector<std::string>);
 	int SetSubTimer(std::vector<std::string>);
+
 	int AddShellCommandArg(std::vector<std::string>);
 	int AddCommandLineArg(std::vector<std::string>);
 };

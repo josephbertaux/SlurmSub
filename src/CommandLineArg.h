@@ -9,15 +9,6 @@
 class CommandLineArg
 {
 protected:
-	int current_index;
-
-	int starting_index;
-	int stopping_index;
-	int stepping_index;
-
-	virtual int SetStartingIndex(std::string);
-	virtual int SetStoppingIndex(std::string);
-	virtual int SetSteppingIndex(std::string);
 
 public:
 	CommandLineArg();

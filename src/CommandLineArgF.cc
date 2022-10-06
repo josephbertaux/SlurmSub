@@ -1,5 +1,10 @@
 #include "CommandLineArgF.h"
 
+CommandLineArgF::CommandLineArgF()
+{
+	file_name = "";
+}
+
 int CommandLineArgF::SetStoppingIndex(std::string s)
 {
 	int return_val = 0;
@@ -63,6 +68,12 @@ int CommandLineArgF::Config(std::vector<std::string> args)
 	if(args.size() >= 2)
 	{
 		if(SetSteppingIndex(args[1]))return_val = 1;
+	}
+	if(args.size() >= 4)
+	{
+		if(SetStartingIndex(args[1]))return_val = 1;
+		if(SetStoppingIndex(args[2]))return_val = 1;
+		if(SetSteppingIndex(args[3]))return_val = 1;
 	}
 
 	label:

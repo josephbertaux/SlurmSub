@@ -1,22 +1,23 @@
 #include "SlurmJobSub.h"
 
-#include <iostream>
-#include <stdexcept>
-#include <stdio.h>
 #include <string>
+#include <vector>
 
-
-int main()
+int main(int argc, char* argv[])
 {
 	SlurmJobSub sjs;
 
-	sjs.Config("/home/jbertau/Data/Repositories/SlurmSub/example.txt", true);
-	int n;
+	std::vector<std::string> args;
+	for(int i = 0; i < argc; i++)
+	{
+		args.push_back(argv[i]);
+	}
+	args.erase(args.begin());
 
-	sjs.GetNumJobs(n);
-
-	sjs.RecreateDirs();
-	sjs.WriteJobs();
+	if(sjs.ShowHelp(args))return 0;
+	if(sjs.Config(args[0], true))return 0;
+	if(sjs.RecreateDirs())return 0;
+	if(sjs.WriteJobs())return 0;
 
 	return 0;
 }

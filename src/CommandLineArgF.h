@@ -1,21 +1,23 @@
-#ifndef COMMAND_LINE_ARGF_H
-#define COMMAND_LINE_ARGF_H
+#ifndef COMMAND_LINE_ARG_F_H
+#define COMMAND_LINE_ARG_F_H
 
 #include <string>
 #include <vector>
 #include <iostream>
 #include <sstream>
 
-#include "CommandLineArg.h"
+#include "CommandLineArgI.h"
 
-class CommandLineArgF: public CommandLineArg
+class CommandLineArgF: public CommandLineArgI
 {
 protected:
 	std::string file_name;
 	int SetStoppingIndex(std::string) override;
 
 public:
-	using CommandLineArg::CommandLineArg;
+	using CommandLineArgI::CommandLineArgI;
+
+	CommandLineArgF();
 
 	int Config(std::vector<std::string>) override;
 	std::string Write() override;
