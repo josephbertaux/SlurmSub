@@ -87,7 +87,7 @@ int CommandLineArgF::Config(std::vector<std::string> args)
 
 std::string CommandLineArgF::Write()
 {
-	return file_name + " " + std::to_string(current_index) + " " + std::to_string(stopping_index);
+	return file_name + " " + std::to_string(current_index) + " " + std::to_string(std::min(current_index + stepping_index, stopping_index));
 }
 
 std::string CommandLineArgF::Name()
