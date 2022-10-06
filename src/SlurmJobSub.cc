@@ -11,7 +11,7 @@ void SlurmJobSub::MakeSJSMap()
 					{
 						s +
 						"./slurm_sub ...\n" +
-						"\tCreates SLURM jobs to parse data stored in source TFiles into target TFiles\n" + 
+						"\tPeriodically creates and submits SLURM job files to run an executable with command line args\n" + 
 						"\tThis executable takes a single argument which is the name of a config file\n" +
 						"\n" +
 						"\tThe lines of the config file have the following format:\n" +
@@ -609,8 +609,8 @@ int SlurmJobSub::ShowHelp(std::vector<std::string> args)
 			output_str << "\tTry" << std::endl;
 			output_str << "\t\t ./slurm_sub -h" << std::endl;
 			output_str << "\tfor a full list of options" << std::endl;
-			flag = true;
 		}
+		flag = true;
 		goto label;
 	}
 	std::cout << std::get<0>(itr->second);

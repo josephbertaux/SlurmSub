@@ -65,14 +65,17 @@ int CommandLineArgF::Config(std::vector<std::string> args)
 	file_name = args[0];	
 	if(SetStoppingIndex(args[0]))return_val = 1;
 
-	if(args.size() >= 2)
+	if(args.size() == 2)
 	{
 		if(SetSteppingIndex(args[1]))return_val = 1;
 	}
-	if(args.size() >= 4)
+	if(args.size() >= 3)
 	{
 		if(SetStartingIndex(args[1]))return_val = 1;
 		if(SetStoppingIndex(args[2]))return_val = 1;
+	}
+	if(args.size() >= 4)
+	{
 		if(SetSteppingIndex(args[3]))return_val = 1;
 	}
 
@@ -84,7 +87,7 @@ int CommandLineArgF::Config(std::vector<std::string> args)
 
 std::string CommandLineArgF::Write()
 {
-	return file_name + " " + std::to_string(current_index) + " " + std::to_string(stepping_index);
+	return file_name + " " + std::to_string(current_index) + " " + std::to_string(stopping_index);
 }
 
 std::string CommandLineArgF::Name()
