@@ -14,5 +14,7 @@ then
 	exit 0
 fi
 
-nohup $PWD/slurm_sub $1 > nohup_slurm.out &
+nohup $( dirname -- "$0"; )/slurm_sub $1 > nohup_slurm.out &
 echo $! > nohup_slurm.pid
+
+exit 0
